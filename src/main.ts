@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { HttpErrorFilter } from './common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
       disableErrorMessages: process.env.NODE_ENV === 'production',
     }),
   );
+  app.useGlobalFilters(new HttpErrorFilter());
 
   const openApi = new DocumentBuilder()
     .setTitle('Spendbase Weather API')
@@ -21,7 +23,7 @@ async function bootstrap() {
     .addTag('weather')
     .build();
   const swagger = SwaggerModule.createDocument(app, openApi);
-  SwaggerModule.setup('api', app, swagger);
+  SwaggerModule.setup('docs', app, swagger);
 
   await app.listen(3000);
 }
