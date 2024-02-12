@@ -21,7 +21,7 @@ async function bootstrap() {
     .addTag('weather')
     .build();
   const swagger = SwaggerModule.createDocument(app, openApi);
-  SwaggerModule.setup('api', app, swagger);
+  SwaggerModule.setup('docs', app, swagger);
 
   await app.listen(3000);
 }
