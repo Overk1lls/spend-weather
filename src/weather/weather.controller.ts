@@ -1,13 +1,16 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Post,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { WeatherCreateDto } from './dto';
+import { WeatherCreateDto, WeatherRequestDto } from './dto';
+import { WeatherTransformInterceptor } from './interceptors';
 import { WeatherService } from './weather.service';
 
 @ApiTags('weather')
@@ -18,10 +21,13 @@ export class WeatherController {
   @HttpCode(HttpStatus.CREATED)
   @Post('/')
   async createWeather(@Body() dto: WeatherCreateDto) {
-    try {
-      return await this.weatherService.createWeather(dto);
-    } catch (error) {
-      throw new InternalServerErrorException({ message: error.message });
-    }
+    return await this.weatherService.createWeather(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/')
+  @UseInterceptors(WeatherTransformInterceptor)
+  async getWeather(@Query() dto: WeatherRequestDto) {
+    return await this.weatherService.getWeather(dto);
   }
 }

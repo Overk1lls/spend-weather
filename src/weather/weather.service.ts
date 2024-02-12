@@ -1,8 +1,8 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { WeatherCreateDto } from './dto';
+import { FindOptionsSelect, Repository } from 'typeorm';
+import { WeatherCreateDto, WeatherRequestDto } from './dto';
 import { WeatherEntity } from './entities';
 import { WeatherData } from './interfaces';
 
@@ -15,7 +15,7 @@ export class WeatherService {
     private readonly weatherRepository: Repository<WeatherEntity>,
   ) {}
 
-  async createWeather(dto: WeatherCreateDto) {
+  async createWeather(dto: WeatherCreateDto): Promise<WeatherData> {
     const result = await this.httpService.axiosRef.get<WeatherData>('', {
       params: {
         ...dto,
@@ -31,5 +31,26 @@ export class WeatherService {
     });
 
     return data;
+  }
+
+  async getWeather(dto: WeatherRequestDto) {
+    const { part, lat, lon } = dto;
+    const exludes = part.split(',');
+    const selectList = Object.keys(WeatherEntity).filter(
+      (key) => !exludes.includes(key),
+    ) as FindOptionsSelect<WeatherEntity>;
+
+    const weather = await this.weatherRepository.findOne({
+      where: {
+        lat,
+        lon,
+      },
+      select: selectList,
+    });
+    if (!weather) {
+      throw new NotFoundException('No weather data by such coordinates');
+    }
+
+    return weather;
   }
 }
