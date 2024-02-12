@@ -27,13 +27,19 @@
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Installation
+You need to create the `.env` file and insert the needed variables there. For example:
+```
+DATABASE_URL=postgres://postgres:admin@localhost:5432/spend-weather
 
+OPEN_WEATHER_API_KEY=ewqie0qwei0qe2i13jeqwkjasdzd21312qwe
+```
+
+After that:
 ```bash
 $ npm install
 ```
 
 ## Running the app
-
 ```bash
 # development
 $ npm run start
